@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATENEA | Asistente de Datos</title>
+    <style>
+        :root {
+            --neon-cyan: #00f3ff;
+            --dark-bg: #050a10;
+            --glass: rgba(0, 243, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Estilos del Avatar */
+        .avatar-container {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 0 20px var(--neon-cyan);
+            animation: pulse 3s infinite;
+            overflow: hidden;
+            border: 2px solid var(--neon-cyan);
+        }
+
+        .avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px var(--neon-cyan); }
+            50% { box-shadow: 0 0 30px var(--neon-cyan), 0 0 10px white; }
+            100% { box-shadow: 0 0 15px var(--neon-cyan); }
+        }
+
+        h1 {
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 0 0 30px 0;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        /* Formulario */
+        form {
+            width: 100%;
+            max-width: 400px;
+            background: var(--glass);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 5px;
+            margin-left: 5px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--neon-cyan);
+        }
+
+        /* Botón de Micrófono */
+        .mic-btn {
+            background: none;
+            border: none;
+            color: var(--neon-cyan);
+            font-size: 1.2rem;
+            padding: 10px;
+            cursor: pointer;
+            margin-left: 5px;
+            transition: transform 0.2s;
+        }
+
+        .mic-btn:active {
+            transform: scale(0.9);
+            color: white;
+        }
+
+        .mic-active {
+            color: #ff0055 !important;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        /* Botón Enviar */
+        button[type="submit"] {
+            width: 100%;
+            background: var(--neon-cyan);
+            color: #000;
+            font-weight: bold;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+        }
+
+        button[type="submit"]:hover {
+            background: white;
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.8);
+        }
+
+        #status {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="avatar-container">
+        <img src="avatar.jpg" alt="Atenea AI Avatar">
+    </div>
+
+    <h1> ATHENEA</h1>
+
+    <form id="ateneaForm">
+        <div class="input-group">
+            <label>Nombre Completo</label>
+            <div class="input-wrapper">
+                <input type="text" name="nombre" id="nombre" placeholder="Diga o escriba el nombre" required>
+                <button type="button" class="mic-btn" onclick="startDictation('nombre')">🎤</button>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Teléfono</label>
+            <div class="input-wrapper">
+                <input type="tel" name="telefono" id="telefono" placeholder="Número de contacto" required>
+                <button type="button" class="mic-btn" onclick="startDictation('telefono')">🎤</button>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Número de Documento</label>
+            <div class="input-wrapper">
+                <input type="text" name="documento" id="documento" placeholder="ID / Cédula" required>
+                <button type="button" class="mic-btn" onclick="startDictation('documento')">🎤</button>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Correo Electrónico</label>
+            <div class="input-wrapper">
+                <input type="email" name="correo" id="correo" placeholder="ejemplo@email.com" required>
+                <button type="button" class="mic-btn" onclick="startDictation('correo')">🎤</button>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Barrio</label>
+            <div class="input-wrapper">
+                <input type="text" name="barrio" id="barrio" placeholder="Nombre del barrio">
+                <button type="button" class="mic-btn" onclick="startDictation('barrio')">🎤</button>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Dirección</label>
+            <div class="input-wrapper">
+                <input type="text" name="direccion" id="direccion" placeholder="Calle / Carrera / Av">
+                <button type="button" class="mic-btn" onclick="startDictation('direccion')">🎤</button>
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn">Enviar Datos a la Nube</button>
+        <div id="status"></div>
+    </form>
+
+    <script>
+        // --- CONFIGURACIÓN ---
+        // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT (La que termina en /exec)
+        const SCRIPT_URL = "TU_URL_DE_APPS_SCRIPT_AQUI";
+
+        // --- LÓGICA DE VOZ ---
+        function startDictation(inputId) {
+            if (window.hasOwnProperty('webkitSpeechRecognition')) {
+                var recognition = new webkitSpeechRecognition();
+
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = "es-CO"; // Configurado para español Colombia, cambia a "es-ES" o "es-MX" si prefieres.
+                
+                var micBtn = document.querySelector(`button[onclick="startDictation('${inputId}')"]`);
+                micBtn.classList.add('mic-active');
+
+                recognition.start();
+
+                recognition.onresult = function(e) {
+                    document.getElementById(inputId).value = e.results[0][0].transcript;
+                    recognition.stop();
+                    micBtn.classList.remove('mic-active');
+                };
+
+                recognition.onerror = function(e) {
+                    console.error(e);
+                    recognition.stop();
+                    micBtn.classList.remove('mic-active');
+                    alert("No te escuché bien, intenta de nuevo.");
+                };
+            } else {
+                alert("Tu navegador no soporta dictado por voz. Usa Chrome en Android/PC.");
+            }
+        }
+
+        // --- LÓGICA DE ENVÍO DE DATOS ---
+        const form = document.getElementById('ateneaForm');
+        const statusDiv = document.getElementById('status');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            if(SCRIPT_URL === "https://script.google.com/macros/s/AKfycbyxWog5ec2Tg4nuY7C_Qe9qsNPL95XTcNRgdDIII-kBqZKotUSzRzez7HWKs__qpILs/exec"
+) {
+                alert("¡Error! No has configurado la URL del Script en el código HTML.");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Procesando...";
+            statusDiv.innerText = "Conectando con Atenea...";
+            statusDiv.style.color = "#00f3ff";
+
+            const formData = new FormData(form);
+            const data = new URLSearchParams(formData);
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: data
+            })
+            .then(res => res.json())
+            .then(response => {
+                if(response.result === 'success') {
+                    statusDiv.innerText = "¡Datos guardados correctamente!";
+                    statusDiv.style.color = "#00ff00";
+                    form.reset();
+                } else {
+                    throw new Error('Error en el script');
+                }
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                statusDiv.innerText = "Error al guardar. Verifica tu conexión.";
+                statusDiv.style.color = "red";
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "ENVIAR DATOS A LA NUBE";
+                setTimeout(() => { statusDiv.innerText = ""; }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>
