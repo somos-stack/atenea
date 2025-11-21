@@ -2,303 +2,307 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATENEA | Asistente de Datos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ATENEA | Quantum Core 3D</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-cyan: #00f3ff;
-            --dark-bg: #050a10;
-            --glass: rgba(0, 243, 255, 0.05);
+            --neon-blue: #00f3ff;
+            --neon-red: #ff0055;
+            --void-bg: #02020a;
         }
 
         body {
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background-color: var(--void-bg);
+            /* Fondo espacial sutil */
+            background-image: radial-gradient(circle at center, #0d0d2b 0%, #000000 100%);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Estilos del Avatar */
-        .avatar-container {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-            position: relative;
-            box-shadow: 0 0 20px var(--neon-cyan);
-            animation: pulse 3s infinite;
+            justify-content: center;
             overflow: hidden;
-            border: 2px solid var(--neon-cyan);
         }
 
-        .avatar-container img {
+        /* --- EL CONTENEDOR 3D (La Esfera de Cristal) --- */
+        .atom-container {
+            position: relative;
+            width: 85vw;
+            height: 85vw;
+            max-width: 500px;
+            max-height: 500px;
+            border-radius: 50%;
+            /* Trucos de CSS para simular una esfera 3D de vidrio */
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), rgba(0,0,0,0.8));
+            border: 3px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 
+                inset 0 0 30px rgba(0, 243, 255, 0.2), /* Brillo interno suave */
+                inset 10px 10px 40px rgba(0,0,0,0.6),   /* Sombra interna para profundidad */
+                0 0 50px rgba(0, 243, 255, 0.1);       /* Brillo externo */
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Wrapper para separar el giro constante de los efectos de estado */
+        .spinner-wrapper {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 15px var(--neon-cyan); }
-            50% { box-shadow: 0 0 30px var(--neon-cyan), 0 0 10px white; }
-            100% { box-shadow: 0 0 15px var(--neon-cyan); }
-        }
-
-        h1 {
-            color: var(--neon-cyan);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin: 0 0 30px 0;
-            font-size: 1.5rem;
-            text-shadow: 0 0 10px var(--neon-cyan);
-        }
-
-        /* Formulario */
-        form {
-            width: 100%;
-            max-width: 400px;
-            background: var(--glass);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            backdrop-filter: blur(5px);
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        label {
-            display: block;
-            font-size: 0.8rem;
-            color: #aaa;
-            margin-bottom: 5px;
-            margin-left: 5px;
-        }
-
-        .input-wrapper {
             display: flex;
+            justify-content: center;
             align-items: center;
+            /* ANIMACIÓN DE GIRO CONSTANTE */
+            animation: spin-slow 20s linear infinite;
         }
 
-        input {
-            width: 100%;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 12px;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
-        input:focus {
-            border-color: var(--neon-cyan);
+        .atom-img {
+            width: 110%; /* Un poco más grande para efecto de lente */
+            height: 110%;
+            object-fit: cover;
+            filter: brightness(1.2) contrast(1.3);
+            mix-blend-mode: screen; /* Hace que el negro de la imagen sea transparente */
+            transition: filter 0.2s ease;
         }
 
-        /* Botón de Micrófono */
-        .mic-btn {
-            background: none;
-            border: none;
-            color: var(--neon-cyan);
-            font-size: 1.2rem;
-            padding: 10px;
-            cursor: pointer;
-            margin-left: 5px;
-            transition: transform 0.2s;
+        /* --- ESTADOS REACTIVOS --- */
+
+        /* Hablando: El contenedor brilla intenso y el núcleo parpadea rápido */
+        .speaking {
+            border-color: var(--neon-blue);
+            box-shadow: 
+                inset 0 0 60px var(--neon-blue),
+                0 0 80px var(--neon-blue);
+        }
+        
+        .speaking .atom-img {
+            /* Parpadeo de energía rápido */
+            animation: energy-flicker 0.1s infinite alternate;
+        }
+        
+        @keyframes energy-flicker {
+            from { filter: brightness(1.2) hue-rotate(0deg); }
+            to { filter: brightness(1.6) hue-rotate(10deg) drop-shadow(0 0 20px white); }
         }
 
-        .mic-btn:active {
-            transform: scale(0.9);
-            color: white;
+
+        /* Escuchando: El contenedor pulsa en rojo */
+        .listening {
+            border-color: var(--neon-red);
+            animation: pulse-red-container 1.5s infinite ease-in-out;
         }
 
-        .mic-active {
-            color: #ff0055 !important;
-            animation: blink 1s infinite;
+        @keyframes pulse-red-container {
+            0% { box-shadow: inset 0 0 30px var(--neon-red), 0 0 30px var(--neon-red); }
+            50% { box-shadow: inset 0 0 80px var(--neon-red), 0 0 80px var(--neon-red); }
+            100% { box-shadow: inset 0 0 30px var(--neon-red), 0 0 30px var(--neon-red); }
         }
 
-        @keyframes blink { 50% { opacity: 0.5; } }
 
-        /* Botón Enviar */
-        button[type="submit"] {
-            width: 100%;
-            background: var(--neon-cyan);
-            color: #000;
-            font-weight: bold;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 10px;
-            text-transform: uppercase;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
-        }
-
-        button[type="submit"]:hover {
-            background: white;
-            box-shadow: 0 0 25px rgba(0, 243, 255, 0.8);
-        }
-
-        #status {
-            margin-top: 15px;
+        /* --- INTERFAZ --- */
+        .ui-panel {
+            position: absolute;
+            bottom: 30px;
+            width: 90%;
             text-align: center;
+            z-index: 20;
+        }
+
+        #system-status {
             font-size: 0.9rem;
-            min-height: 20px;
+            letter-spacing: 3px;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        #live-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            min-height: 1.5em;
+        }
+
+        .activate-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 50px;
+            font-size: 1.2rem;
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: bold;
+            letter-spacing: 2px;
+            z-index: 30;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 30px var(--neon-blue);
+            transition: 0.3s;
+        }
+
+        .activate-btn:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 60px var(--neon-blue);
         }
     </style>
 </head>
 <body>
 
-    <div class="avatar-container">
-        <img src="avatar.jpg" alt="Atenea AI Avatar">
+    <div class="atom-container" id="atom-core">
+        <div class="spinner-wrapper">
+            <img src="atomo.jpg" alt="Atenea Core" class="atom-img">
+        </div>
     </div>
 
-    <h1> ATHENEA</h1>
+    <div class="ui-panel">
+        <div id="system-status">SISTEMA CUÁNTICO EN ESPERA</div>
+        <div id="live-text">...</div>
+    </div>
 
-    <form id="ateneaForm">
-        <div class="input-group">
-            <label>Nombre Completo</label>
-            <div class="input-wrapper">
-                <input type="text" name="nombre" id="nombre" placeholder="Diga o escriba el nombre" required>
-                <button type="button" class="mic-btn" onclick="startDictation('nombre')">🎤</button>
-            </div>
-        </div>
+    <button class="activate-btn" onclick="iniciarSecuencia()">INICIAR NÚCLEO</button>
 
-        <div class="input-group">
-            <label>Teléfono</label>
-            <div class="input-wrapper">
-                <input type="tel" name="telefono" id="telefono" placeholder="Número de contacto" required>
-                <button type="button" class="mic-btn" onclick="startDictation('telefono')">🎤</button>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label>Número de Documento</label>
-            <div class="input-wrapper">
-                <input type="text" name="documento" id="documento" placeholder="ID / Cédula" required>
-                <button type="button" class="mic-btn" onclick="startDictation('documento')">🎤</button>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label>Correo Electrónico</label>
-            <div class="input-wrapper">
-                <input type="email" name="correo" id="correo" placeholder="ejemplo@email.com" required>
-                <button type="button" class="mic-btn" onclick="startDictation('correo')">🎤</button>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label>Barrio</label>
-            <div class="input-wrapper">
-                <input type="text" name="barrio" id="barrio" placeholder="Nombre del barrio">
-                <button type="button" class="mic-btn" onclick="startDictation('barrio')">🎤</button>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label>Dirección</label>
-            <div class="input-wrapper">
-                <input type="text" name="direccion" id="direccion" placeholder="Calle / Carrera / Av">
-                <button type="button" class="mic-btn" onclick="startDictation('direccion')">🎤</button>
-            </div>
-        </div>
-
-        <button type="submit" id="submitBtn">Enviar Datos a la Nube</button>
-        <div id="status"></div>
+    <form id="ateneaForm" style="display:none">
+        <input type="text" id="nombre" name="nombre">
+        <input type="text" id="telefono" name="telefono">
+        <input type="text" id="documento" name="documento">
+        <input type="text" id="correo" name="correo">
+        <input type="text" id="barrio" name="barrio">
+        <input type="text" id="direccion" name="direccion">
     </form>
 
     <script>
-        // --- CONFIGURACIÓN ---
-        // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT (La que termina en /exec)
-        const SCRIPT_URL = "TU_URL_DE_APPS_SCRIPT_AQUI";
+        // --- ¡PEGA TU URL DE GOOGLE APPS SCRIPT AQUÍ! ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxWog5ec2Tg4nuY7C_Qe9qsNPL95XTcNRgdDIII-kBqZKotUSzRzez7HWKs__qpILs/exec";
 
-        // --- LÓGICA DE VOZ ---
-        function startDictation(inputId) {
-            if (window.hasOwnProperty('webkitSpeechRecognition')) {
-                var recognition = new webkitSpeechRecognition();
+        const pasos = [
+            { id: 'nombre', txt: "Núcleo activo. Identifíquese con su nombre completo." },
+            { id: 'telefono', txt: "¿Cuál es su número de enlace telefónico?" },
+            { id: 'documento', txt: "Requiero su número de documento de identidad." },
+            { id: 'correo', txt: "Indique su dirección de correo electrónico." },
+            { id: 'barrio', txt: "¿En qué sector o barrio se encuentra?" },
+            { id: 'direccion', txt: "Finalmente, dicte las coordenadas de su dirección." }
+        ];
 
-                recognition.continuous = false;
-                recognition.interimResults = false;
-                recognition.lang = "es-CO"; // Configurado para español Colombia, cambia a "es-ES" o "es-MX" si prefieres.
+        let index = 0;
+        const core = document.getElementById('atom-core');
+        const statusDiv = document.getElementById('system-status');
+        const textDiv = document.getElementById('live-text');
+        const btn = document.querySelector('.activate-btn');
+
+        const synth = window.speechSynthesis;
+        let recognition;
+
+        if (window.webkitSpeechRecognition) {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = "es-CO";
+            recognition.continuous = false;
+            recognition.interimResults = true;
+        }
+
+        function iniciarSecuencia() {
+            btn.style.display = 'none';
+            index = 0;
+            procesarPaso();
+        }
+
+        function procesarPaso() {
+            if (index < pasos.length) {
+                const p = pasos[index];
+                statusDiv.innerText = "SOLICITANDO DATO: " + p.id.toUpperCase();
+                statusDiv.style.color = "var(--neon-blue)";
+                textDiv.innerText = "...";
                 
-                var micBtn = document.querySelector(`button[onclick="startDictation('${inputId}')"]`);
-                micBtn.classList.add('mic-active');
-
-                recognition.start();
-
-                recognition.onresult = function(e) {
-                    document.getElementById(inputId).value = e.results[0][0].transcript;
-                    recognition.stop();
-                    micBtn.classList.remove('mic-active');
-                };
-
-                recognition.onerror = function(e) {
-                    console.error(e);
-                    recognition.stop();
-                    micBtn.classList.remove('mic-active');
-                    alert("No te escuché bien, intenta de nuevo.");
-                };
+                hablar(p.txt, () => {
+                    escuchar(p.id);
+                });
             } else {
-                alert("Tu navegador no soporta dictado por voz. Usa Chrome en Android/PC.");
+                guardarDatos();
             }
         }
 
-        // --- LÓGICA DE ENVÍO DE DATOS ---
-        const form = document.getElementById('ateneaForm');
-        const statusDiv = document.getElementById('status');
-        const submitBtn = document.getElementById('submitBtn');
-
-        form.addEventListener('submit', e => {
-            e.preventDefault();
+        function hablar(texto, callback) {
+            const utter = new SpeechSynthesisUtterance(texto);
+            utter.rate = 1.1; 
+            utter.pitch = 1.0;
             
-            if(SCRIPT_URL === "https://script.google.com/macros/s/AKfycbyxWog5ec2Tg4nuY7C_Qe9qsNPL95XTcNRgdDIII-kBqZKotUSzRzez7HWKs__qpILs/exec"
-) {
-                alert("¡Error! No has configurado la URL del Script en el código HTML.");
-                return;
-            }
+            utter.onstart = () => {
+                core.classList.add('speaking');
+                core.classList.remove('listening');
+            };
+            utter.onend = () => {
+                core.classList.remove('speaking');
+                if (callback) callback();
+            };
+            synth.speak(utter);
+        }
 
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Procesando...";
-            statusDiv.innerText = "Conectando con Atenea...";
-            statusDiv.style.color = "#00f3ff";
+        function escuchar(idCampo) {
+            statusDiv.innerText = "ESCUCHANDO ENTRADA DE AUDIO...";
+            statusDiv.style.color = "var(--neon-red)";
+            core.classList.add('listening');
+            
+            try { recognition.start(); } catch(e){}
 
-            const formData = new FormData(form);
-            const data = new URLSearchParams(formData);
+            recognition.onresult = (event) => {
+                let texto = event.results[0][0].transcript;
+                textDiv.innerText = texto;
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: data
-            })
+                if (event.results[0].isFinal) {
+                    if(idCampo === 'correo') {
+                        texto = texto.replace(/arroba/gi, '@').replace(/punto/gi, '.').replace(/\s/g, '').toLowerCase();
+                        textDiv.innerText = texto;
+                    }
+                    document.getElementById(idCampo).value = texto;
+                    core.classList.remove('listening');
+                    setTimeout(() => { index++; procesarPaso(); }, 1200);
+                }
+            };
+
+            recognition.onerror = () => {
+                core.classList.remove('listening');
+                hablar("Error de entrada. Repita el dato.", () => escuchar(idCampo));
+            };
+        }
+
+        function guardarDatos() {
+            statusDiv.innerText = "PROCESANDO";
+            textDiv.innerText = "Subiendo a la nube...";
+            core.classList.add('speaking');
+
+            const form = document.getElementById('ateneaForm');
+            fetch(SCRIPT_URL, { method: 'POST', body: new URLSearchParams(new FormData(form)) })
             .then(res => res.json())
             .then(response => {
+                core.classList.remove('speaking');
                 if(response.result === 'success') {
-                    statusDiv.innerText = "¡Datos guardados correctamente!";
+                    statusDiv.innerText = "COMPLETADO";
                     statusDiv.style.color = "#00ff00";
-                    form.reset();
-                } else {
-                    throw new Error('Error en el script');
+                    textDiv.innerText = "Datos asegurados en el núcleo.";
+                    hablar("Información almacenada correctamente. Cerrando enlace.");
+                    setTimeout(() => location.reload(), 5000);
                 }
-            })
-            .catch(error => {
-                console.error('Error!', error.message);
-                statusDiv.innerText = "Error al guardar. Verifica tu conexión.";
-                statusDiv.style.color = "red";
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "ENVIAR DATOS A LA NUBE";
-                setTimeout(() => { statusDiv.innerText = ""; }, 5000);
             });
-        });
+        }
     </script>
 </body>
 </html>
